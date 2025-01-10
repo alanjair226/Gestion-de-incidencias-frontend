@@ -9,8 +9,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        dark: {
+          primary: '#121212',
+          secondary: '#1E1E1E',
+          text: {
+            primary: '#E0E0E0',
+            secondary: '#A0A0A0',
+          },
+          accent: '#BB86FC',
+          success: '#03DAC6',
+          warning: '#FFC107',
+          error: '#e14460',
+          period: {
+            actual: "#15a64f", // Verde oscuro
+            past: "#e94949", // Rojo oscuro
+          },
+        },
       },
     },
   },
