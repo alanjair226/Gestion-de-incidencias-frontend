@@ -49,83 +49,97 @@ export default function AdminDashboard() {
     setFilteredUsers(users.filter((user) => user.username.toLowerCase().includes(lowerSearch)));
   }, [search, users]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
-      {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">
-            Dashboard de Admin
-          </h1>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {loading ? (
-          <div className="text-center text-lg font-semibold text-dark-text-secondary">
-            Cargando información...
-          </div>
-        ) : error ? (
-          <div className="text-center text-lg font-semibold text-dark-error">
-            Error: {error}
-          </div>
-        ) : (
-          <>
-            {/* Filtro */}
-            <div className="mb-6">
-              <input
-                type="text"
-                placeholder="Buscar usuarios por nombre..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full p-2 rounded bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
-              />
-            </div>
-
-            {/* Botones de acceso */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <button
-                onClick={() => router.push("/user/incidences")}
-                className="p-4 bg-dark-accent text-dark-primary rounded shadow-md hover:shadow-lg transition"
-              >
-                Ver Incidencias Asignadas
-              </button>
-              <button
-                onClick={() => router.push("/admin/notifications")}
-                className="p-4 bg-dark-warning text-dark-primary rounded shadow-md hover:shadow-lg transition"
-              >
-                Notificaciones ({notifications.length})
-              </button>
-              <button
-                onClick={() => router.push("/admin/settings")}
-                className="p-4 bg-dark-secondary text-dark-primary rounded shadow-md hover:shadow-lg transition"
-              >
-                Configuración (Periodos, Severidades, Incidencias Comunes)
-              </button>
-            </div>
-
-            {/* Lista de usuarios */}
-            <h2 className="text-2xl font-bold mb-6 text-dark-accent">Usuarios</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="p-4 bg-dark-secondary rounded shadow-md hover:shadow-lg transition cursor-pointer"
-                  onClick={() => router.push(`/admin/users/${user.id}`)}
-                >
-                  <img
-                    src={user.image}
-                    alt={user.username}
-                    className="w-24 h-24 rounded-full mx-auto mb-4"
-                  />
-                  <h3 className="text-xl font-bold text-center">{user.username}</h3>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </main>
+  {/* Header */}
+  <header className="bg-dark-secondary py-6 shadow-md">
+    <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+      <h1 className="text-3xl font-bold text-dark-accent text-center md:text-left">
+        Incidencias OnFiber
+      </h1>
+      <button
+        onClick={handleLogout}
+        className="mt-4 md:mt-0 bg-dark-error text-dark-primary py-2 px-6 rounded-lg shadow hover:bg-red-600 transition"
+      >
+        Cerrar sesión
+      </button>
     </div>
+  </header>
+
+  {/* Main Content */}
+  <main className="container mx-auto px-6 py-8">
+    {loading ? (
+      <div className="text-center text-lg font-semibold text-dark-text-secondary">
+        Cargando información...
+      </div>
+    ) : error ? (
+      <div className="text-center text-lg font-semibold text-dark-error">
+        Error: {error}
+      </div>
+    ) : (
+      <>
+        {/* Filtro */}
+        <section className="mb-6">
+          <input
+            type="text"
+            placeholder="Buscar usuarios por nombre..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full p-3 rounded-lg bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
+          />
+        </section>
+
+        {/* Botones de acceso */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <button
+            onClick={() => router.push("/user/incidences")}
+            className="p-6 bg-dark-accent text-dark-primary rounded-lg shadow-md hover:shadow-lg transition text-center font-semibold"
+          >
+            Ver Incidencias Asignadas
+          </button>
+          <button
+            onClick={() => router.push("/admin/notifications")}
+            className="p-6 bg-dark-warning text-dark-primary rounded-lg shadow-md hover:shadow-lg transition text-center font-semibold"
+          >
+            Notificaciones ({notifications.length})
+          </button>
+          <button
+            onClick={() => router.push("/admin/settings")}
+            className="p-6 bg-dark-secondary text-dark-text-secondarysecondary rounded-lg shadow-md hover:shadow-lg transition text-center font-semibold"
+          >
+            Configuración (Periodos, Severidades, Incidencias Comunes)
+          </button>
+        </section>
+
+        {/* Lista de usuarios */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6 text-dark-accent">Usuarios</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredUsers.map((user) => (
+              <div
+                key={user.id}
+                className="p-6 bg-dark-secondary rounded-lg shadow-md hover:shadow-lg transition cursor-pointer text-center"
+                onClick={() => router.push(`/admin/users/${user.id}`)}
+              >
+                <img
+                  src={user.image}
+                  alt={user.username}
+                  className="w-24 h-24 rounded-full mx-auto mb-4 shadow-md"
+                />
+                <h3 className="text-xl font-bold text-dark-accent">{user.username}</h3>
+              </div>
+            ))}
+          </div>
+        </section>
+      </>
+    )}
+  </main>
+</div>
+
   );
 }

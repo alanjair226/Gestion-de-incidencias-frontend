@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { getUserIncidences } from "../../../../utils/incidences";
-import { getUserPeriods } from "../../../../utils/periods";
-import { Incidence, UserScore } from "../../../../types";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
+import { getUserIncidences } from "../../../../../utils/incidences";
+import { getUserPeriods } from "../../../../../utils/periods";
+import { Incidence, UserScore } from "../../../../../types";
 
 export default function PeriodDetails() {
   const [incidences, setIncidences] = useState<Incidence[]>([]);
@@ -12,7 +12,10 @@ export default function PeriodDetails() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { id } = useParams(); // Obtenemos el ID del periodo dinámicamente
+  const searchParams = useSearchParams();
+  const { id: periodId } = useParams();
+
+  const userId = parseInt(searchParams.get("userId") || "0", 10); // Obtener el userId de los query params
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,20 +26,24 @@ export default function PeriodDetails() {
           return;
         }
 
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const userId: number = payload.id;
+        if (!userId || !periodId) {
+          console.error("Faltan parámetros para obtener datos.");
+          throw new Error("Parámetros inválidos en la URL.");
+        }
+
+        const parsedPeriodId = Array.isArray(periodId) ? parseInt(periodId[0], 10) : parseInt(periodId || "0", 10);
+
+        if (isNaN(parsedPeriodId)) {
+          throw new Error("El ID del periodo no es válido.");
+        }
 
         // Obtener las incidencias del periodo
-        const incidencesData = await getUserIncidences(userId, Number(id), token);
-        // Ordenar incidencias por fecha más reciente
-        const sortedIncidences = incidencesData.sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        setIncidences(sortedIncidences);
+        const incidencesData = await getUserIncidences(userId, parsedPeriodId, token);
+        setIncidences(incidencesData);
 
         // Obtener la calificación del periodo
         const periodsData: UserScore[] = await getUserPeriods(userId, token);
-        const selectedPeriod = periodsData.find((p) => p.period.id === Number(id));
+        const selectedPeriod = periodsData.find((p) => p.period.id === parsedPeriodId);
         setScore(selectedPeriod ? selectedPeriod.score : null);
       } catch (err: any) {
         setError(err.message);
@@ -46,7 +53,7 @@ export default function PeriodDetails() {
     };
 
     fetchData();
-  }, [id, router]);
+  }, [userId, periodId, router]);
 
   const getScoreClass = (score: number | null): string => {
     if (score === null) return "text-dark-text-secondary";
@@ -60,7 +67,9 @@ export default function PeriodDetails() {
       {/* Header */}
       <header className="bg-dark-secondary py-6 shadow-md">
         <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">Detalles del Periodo</h1>
+          <h1 className="text-3xl font-bold text-dark-accent text-center">
+            Detalles del Periodo
+          </h1>
         </div>
       </header>
 
@@ -75,9 +84,9 @@ export default function PeriodDetails() {
             Error: {error}
           </div>
         ) : (
-          <>
+          <div className="space-y-8">
             {/* Score */}
-            <div className="text-center mb-8">
+            <div className="text-center">
               <p className={`text-2xl font-bold ${getScoreClass(score)}`}>
                 {score !== null ? `Calificación: ${score}` : "Calificación no disponible"}
               </p>
@@ -90,24 +99,34 @@ export default function PeriodDetails() {
               </p>
             ) : (
               <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {incidences.map((incidence) => (
-                  <li
-                    key={incidence.id}
-                    className="p-4 bg-dark-secondary rounded shadow-md hover:shadow-lg transition cursor-pointer"
-                    onClick={() => router.push(`/user/incidences/${incidence.id}`)}
-                  >
-                    <h2 className="text-xl font-bold text-dark-accent mb-2">{incidence.description}</h2>
-                    <p className="text-sm text-dark-text-secondary">
-                      <strong>Severidad:</strong> {incidence.severity.name}
-                    </p>
-                    <p className="text-sm text-dark-text-secondary">
-                      <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+  {incidences.map((incidence) => (
+    <li
+      key={incidence.id}
+      className="relative p-6 bg-dark-secondary rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 cursor-pointer"
+      onClick={() => router.push(`/user/incidences/${incidence.id}`)}
+    >
+      {/* Indicadores */}
+      {incidence.status && (
+        <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
+      )}
+      {!incidence.valid && (
+        <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
+      )}
+
+      <h2 className="text-xl font-bold text-dark-accent mb-4">
+        {incidence.description}
+      </h2>
+      <p className="text-sm text-dark-text-secondary mb-2">
+        <strong>Severidad:</strong> {incidence.severity.name}
+      </p>
+      <p className="text-sm text-dark-text-secondary mb-2">
+        <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
+      </p>
+    </li>
+  ))}
+</ul>
             )}
-          </>
+          </div>
         )}
       </main>
     </div>

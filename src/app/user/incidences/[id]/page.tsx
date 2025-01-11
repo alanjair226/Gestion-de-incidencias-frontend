@@ -11,6 +11,7 @@ export default function IncidenceDetails() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const router = useRouter();
   const { id } = useParams();
 
@@ -21,6 +22,9 @@ export default function IncidenceDetails() {
         router.push("/login");
         return;
       }
+
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setCurrentUserId(payload.id);
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${apiUrl}/incidences/${id}`, {
@@ -66,7 +70,7 @@ export default function IncidenceDetails() {
 
       setSuccess("Comentario agregado con éxito");
       setComment("");
-      fetchData(); // Refrescar los datos para incluir el nuevo comentario
+      fetchData();
     } catch (err: any) {
       setError(err.message);
     }
@@ -99,16 +103,17 @@ export default function IncidenceDetails() {
   };
 
   return (
-    <div className="p-6 dark:bg-dark-primary dark:text-dark-text-primary min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-center">Detalles de la Incidencia</h1>
+    <div className="p-6 min-h-screen bg-dark-primary text-dark-text-primary">
+      <h1 className="text-3xl font-bold text-center mb-6">Detalles de la Incidencia</h1>
       {loading ? (
-        <div>Cargando incidencia...</div>
+        <div className="text-center text-lg">Cargando incidencia...</div>
       ) : error ? (
-        <div className="text-dark-error">Error: {error}</div>
+        <div className="text-center text-lg text-dark-error">Error: {error}</div>
       ) : incidence ? (
         <>
-          <div className="p-6 bg-dark-secondary rounded shadow-md mb-6">
-            <h2 className="text-xl font-bold mb-2">{incidence.description}</h2>
+          {/* Incidence Details */}
+          <div className="p-6 bg-dark-secondary rounded-lg shadow-md mb-6">
+            <h2 className="text-xl font-bold mb-4">{incidence.description}</h2>
             <div className="flex flex-wrap gap-4 mb-4">
               <p>
                 <strong>Severidad:</strong> {incidence.severity.name}
@@ -128,47 +133,55 @@ export default function IncidenceDetails() {
               <strong>Asignado a:</strong> {incidence.assigned_to.username}
             </p>
             <p>
-              <strong>Fecha de creación:</strong> {new Date(incidence.created_at).toLocaleString()}
+              <strong>Fecha de creación:</strong>{" "}
+              {new Date(incidence.created_at).toLocaleString()}
             </p>
           </div>
 
+          {/* Existing Comment */}
           {incidence.comment && (
-            <div className="p-4 bg-dark-secondary rounded shadow-md mb-6">
+            <div className="p-6 bg-dark-secondary rounded-lg shadow-md mb-6">
               <h3 className="text-lg font-bold mb-2">Comentario existente</h3>
               <p className="text-dark-text-secondary">{incidence.comment}</p>
             </div>
           )}
 
-          {incidence.status === false && incidence.comment === null && incidence.period.is_open && (
-            <div className="p-6 bg-dark-secondary rounded shadow-md mb-6">
-              <h3 className="text-lg font-bold mb-2">Añadir Comentario</h3>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="w-full p-2 mb-2 bg-dark-primary text-dark-text-primary border border-dark-secondary rounded focus:outline-none focus:ring-2 focus:ring-dark-accent"
-                placeholder="Escribe tu comentario aquí..."
-              />
-              <button
-                onClick={handleCommentSubmit}
-                className="bg-dark-accent text-dark-primary py-2 px-4 rounded hover:bg-purple-700"
-              >
-                Enviar Comentario
-              </button>
-              {error && <p className="text-dark-error mt-2">{error}</p>}
-              {success && <p className="text-dark-success mt-2">{success}</p>}
-            </div>
-          )}
+          {/* Add Comment Form */}
+          {incidence.assigned_to.id === currentUserId &&
+            !incidence.status &&
+            !incidence.comment &&
+            incidence.period.is_open && (
+              <div className="p-6 bg-dark-secondary rounded-lg shadow-md mb-6">
+                <h3 className="text-lg font-bold mb-4">Añadir Comentario</h3>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="w-full p-3 mb-4 bg-dark-primary text-dark-text-primary border border-dark-secondary rounded focus:outline-none focus:ring-2 focus:ring-dark-accent"
+                  placeholder="Escribe tu comentario aquí..."
+                />
+                <button
+                  onClick={handleCommentSubmit}
+                  className="bg-dark-accent text-dark-primary py-2 px-4 rounded hover:bg-purple-700 transition"
+                >
+                  Enviar Comentario
+                </button>
+                {error && <p className="text-dark-error mt-4">{error}</p>}
+                {success && <p className="text-dark-success mt-4">{success}</p>}
+              </div>
+            )}
+
+          {/* Back Button */}
           <div className="text-center">
             <button
               onClick={() => router.back()}
-              className="mt-4 bg-dark-accent text-dark-primary py-2 px-6 rounded hover:bg-purple-700"
+              className="mt-4 bg-dark-accent text-dark-primary py-2 px-6 rounded hover:bg-purple-700 transition"
             >
               Volver
             </button>
           </div>
         </>
       ) : (
-        <div>No se encontraron detalles para esta incidencia.</div>
+        <div className="text-center">No se encontraron detalles para esta incidencia.</div>
       )}
     </div>
   );

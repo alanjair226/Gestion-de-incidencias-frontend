@@ -56,3 +56,23 @@ export interface User {
     username: string;
     image: string;
   }
+
+  export interface Period {
+    id: number;
+    start_date: string;
+    end_date: string | null;
+    is_open: boolean;
+  }
+  
+  export interface Severity {
+    id: number;
+    name: string;
+    value: number;
+  }
+  
+  export interface CommonIncidence {
+    id: number;
+    incidence: string;
+    severity: Severity; // Relación con el tipo de severidad
+  }
+  

@@ -17,7 +17,7 @@ export default {
             secondary: '#A0A0A0',
           },
           accent: '#BB86FC',
-          success: '#03DAC6',
+          success: '#04b224',
           warning: '#FFC107',
           error: '#e14460',
           period: {
