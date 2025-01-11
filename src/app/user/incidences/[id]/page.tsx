@@ -39,8 +39,13 @@ export default function IncidenceDetails() {
 
       const data: Incidence = await response.json();
       setIncidence(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -71,8 +76,13 @@ export default function IncidenceDetails() {
       setSuccess("Comentario agregado con éxito");
       setComment("");
       fetchData();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 

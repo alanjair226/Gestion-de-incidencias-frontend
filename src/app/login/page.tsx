@@ -70,8 +70,13 @@ export default function LoginPage() {
       } else if (payload.role === "user") {
         router.push("/user/incidences");
       }
-    } catch (err: any) {
-      setError("Error al iniciar sesión. Verifica tus credenciales.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 

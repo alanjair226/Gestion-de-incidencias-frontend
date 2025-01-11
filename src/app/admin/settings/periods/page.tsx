@@ -17,8 +17,13 @@ export default function PeriodsPage() {
 
         const data = await getPeriods(token);
         setPeriods(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
@@ -35,8 +40,13 @@ export default function PeriodsPage() {
       await createPeriod(token);
       const updatedPeriods = await getPeriods(token);
       setPeriods(updatedPeriods);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 
@@ -48,8 +58,13 @@ export default function PeriodsPage() {
       await closePeriod(id, token);
       const updatedPeriods = await getPeriods(token);
       setPeriods(updatedPeriods);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 

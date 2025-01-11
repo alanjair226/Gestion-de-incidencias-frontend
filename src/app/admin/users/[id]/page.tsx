@@ -65,8 +65,13 @@ export default function UserDetailsPage() {
         // Obtener incidencias del periodo actual
         const incidencesData = await getUserIncidences(userId, currentPeriod.id, token);
         setCurrentIncidences(incidencesData);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }

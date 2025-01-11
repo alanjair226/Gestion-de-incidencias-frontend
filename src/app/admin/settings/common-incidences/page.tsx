@@ -32,8 +32,13 @@ export default function CommonIncidencesPage() {
 
         const severitiesData = await getSeverities(token);
         setSeverities(severitiesData);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
@@ -66,8 +71,13 @@ export default function CommonIncidencesPage() {
 
       const updatedIncidences = await getCommonIncidences(token);
       setCommonIncidences(updatedIncidences);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 
@@ -88,8 +98,13 @@ export default function CommonIncidencesPage() {
 
       setEditing(null);
       setEditedIncidence({ incidence: "", severity: "" });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 

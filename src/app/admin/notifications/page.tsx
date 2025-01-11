@@ -26,8 +26,13 @@ export default function AdminNotifications() {
 
         const notificationsData = await getAdminNotifications(adminId, token);
         setNotifications(notificationsData);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
@@ -49,8 +54,13 @@ export default function AdminNotifications() {
 
       // Actualizar la lista de notificaciones
       setNotifications((prev) => prev.filter((notif) => notif.id !== incidenceId));
-    } catch (err: any) {
-      console.error("Error al realizar la acción:", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 

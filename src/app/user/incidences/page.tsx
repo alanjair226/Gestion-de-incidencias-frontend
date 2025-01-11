@@ -49,8 +49,13 @@ export default function UserIncidences() {
         // Obtener el score del periodo actual
         const score = await getUserScore(userId, currentPeriod.id, token);
         setCurrentScore(score);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }

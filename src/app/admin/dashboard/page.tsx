@@ -34,8 +34,13 @@ export default function AdminDashboard() {
         const adminId: number = payload.id;
         const notificationsData = await getAdminNotifications(adminId, token);
         setNotifications(notificationsData);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }

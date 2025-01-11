@@ -45,8 +45,13 @@ export default function PeriodDetails() {
         const periodsData: UserScore[] = await getUserPeriods(userId, token);
         const selectedPeriod = periodsData.find((p) => p.period.id === parsedPeriodId);
         setScore(selectedPeriod ? selectedPeriod.score : null);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }

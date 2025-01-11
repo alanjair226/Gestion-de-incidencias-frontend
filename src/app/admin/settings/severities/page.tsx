@@ -18,8 +18,13 @@ export default function SeveritiesPage() {
 
         const data = await getSeverities(token);
         setSeverities(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Ocurrió un error inesperado');
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
@@ -42,8 +47,13 @@ export default function SeveritiesPage() {
 
       const updatedSeverities = await getSeverities(token);
       setSeverities(updatedSeverities);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 
