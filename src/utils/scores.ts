@@ -1,3 +1,5 @@
+import { Score } from "../types";
+
 export async function getUserScore(userId: number, periodId: number, token: string): Promise<number> {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -15,7 +17,7 @@ export async function getUserScore(userId: number, periodId: number, token: stri
         const scores = await response.json();
 
         // Buscar el score del periodo actual
-        const currentScore = scores.find((score: any) => score.period.id === periodId);
+        const currentScore = scores.find((score: Score) => score.period.id === periodId);
 
         if (!currentScore) {
             return 0; // Si no hay score, se asume 0

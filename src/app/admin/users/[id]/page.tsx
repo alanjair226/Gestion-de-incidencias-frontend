@@ -100,9 +100,13 @@ export default function UserDetailsPage() {
       setNewIncidence((prev) => ({ ...prev, description: "", severity: "" }));
       const updatedIncidences = await getUserIncidences(userId, currentPeriodId!, token);
       setCurrentIncidences(updatedIncidences);
-    } catch (err: any) {
-      console.error("Error al crear la incidencia:", err.message);
-      alert("Error al crear la incidencia.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrió un error inesperado');
+        console.error(err);
+      }
     }
   };
 

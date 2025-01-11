@@ -6,6 +6,18 @@ export interface Period {
     is_open: boolean;
 }
 
+export interface UpdateIncidenceBody {
+    status?: boolean;
+    valid?: boolean;
+  }
+
+  export interface Score {
+    score: number;
+    period: {
+      id: number;
+    };
+  }
+
 // Tipo para una incidencia
 export interface Incidence {
     id: number;

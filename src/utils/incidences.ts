@@ -1,4 +1,4 @@
-import { Incidence } from "../types";
+import { Incidence, UpdateIncidenceBody } from "../types";
 
 export async function getUserIncidences(userId: number, periodId: number, token: string): Promise<Incidence[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -40,7 +40,7 @@ export async function addCommentToIncidence(incidenceId: number, comment: string
 
 export async function updateIncidenceStatus(
   incidenceId: number,
-  body: Record<string, any>,
+  body: UpdateIncidenceBody,
   token: string
 ): Promise<void> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
