@@ -144,13 +144,6 @@ export default function UserDetailsPage() {
     }));
   };
 
-  const getScoreClass = (score: number | null): string => {
-    if (score === null) return "text-dark-text-secondary";
-    if (score >= 85) return "text-dark-success";
-    if (score >= 70) return "text-dark-warning";
-    return "text-dark-error";
-  };
-
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
