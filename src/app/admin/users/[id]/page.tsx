@@ -8,6 +8,8 @@ import { getSeverities } from "../../../../utils/severities";
 import { getCurrentPeriod, getUserPeriods } from "../../../../utils/periods";
 import { getUserIncidences, createIncidence } from "../../../../utils/incidences";
 import { User, CommonIncidence, Severity, Incidence, UserScore } from "../../../../types";
+import Image from "next/image";
+
 
 export default function UserDetailsPage() {
   const { id } = useParams();
@@ -162,22 +164,23 @@ export default function UserDetailsPage() {
             {/* Datos Generales */}
             <section className="flex flex-col md:flex-row items-center justify-between mb-8">
               <div className="flex flex-col items-center">
-                <img
-                  src={user?.image}
-                  alt={user?.username}
-                  className="w-32 h-32 rounded-full mb-4"
+                <Image
+                  src={user?.image || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
+                  alt={user?.username || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
+                  width={128}
+                  height={128}
+                  className="rounded-full mb-4"
                 />
                 <h2 className="text-2xl font-bold">{user?.username}</h2>
                 <p className="mt-2 text-lg">
                   <strong>Calificación:</strong>{" "}
                   <span
-                    className={`font-bold ${
-                      score !== null && score >= 85
+                    className={`font-bold ${score !== null && score >= 85
                         ? "text-dark-success"
                         : score !== null
-                        ? "text-dark-warning"
-                        : "text-dark-error"
-                    }`}
+                          ? "text-dark-warning"
+                          : "text-dark-error"
+                      }`}
                   >
                     {score !== null ? score : "No disponible"}
                   </span>
@@ -238,37 +241,37 @@ export default function UserDetailsPage() {
 
             {/* Incidencias del Periodo Actual */}
             <section>
-  <h2 className="text-xl font-bold mb-4">Incidencias del Periodo Actual</h2>
-  {currentIncidences.length === 0 ? (
-    <p className="text-center">No hay incidencias registradas en el periodo actual.</p>
-  ) : (
-    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {currentIncidences.map((incidence) => (
-        <li
-          key={incidence.id}
-          className="relative p-4 bg-dark-secondary rounded shadow-md hover:shadow-lg transition cursor-pointer"
-          onClick={() => router.push(`/user/incidences/${incidence.id}`)}
-        >
-          {/* Indicadores */}
-          {incidence.status && (
-            <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
-          )}
-          {!incidence.valid && (
-            <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
-          )}
+              <h2 className="text-xl font-bold mb-4">Incidencias del Periodo Actual</h2>
+              {currentIncidences.length === 0 ? (
+                <p className="text-center">No hay incidencias registradas en el periodo actual.</p>
+              ) : (
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {currentIncidences.map((incidence) => (
+                    <li
+                      key={incidence.id}
+                      className="relative p-4 bg-dark-secondary rounded shadow-md hover:shadow-lg transition cursor-pointer"
+                      onClick={() => router.push(`/user/incidences/${incidence.id}`)}
+                    >
+                      {/* Indicadores */}
+                      {incidence.status && (
+                        <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
+                      )}
+                      {!incidence.valid && (
+                        <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
+                      )}
 
-          <h3 className="font-bold text-dark-accent">{incidence.description}</h3>
-          <p className="text-sm text-dark-text-secondary">
-            <strong>Severidad:</strong> {incidence.severity.name}
-          </p>
-          <p className="text-sm text-dark-text-secondary">
-            <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
-          </p>
-        </li>
-      ))}
-    </ul>
-  )}
-</section>
+                      <h3 className="font-bold text-dark-accent">{incidence.description}</h3>
+                      <p className="text-sm text-dark-text-secondary">
+                        <strong>Severidad:</strong> {incidence.severity.name}
+                      </p>
+                      <p className="text-sm text-dark-text-secondary">
+                        <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
           </>
         )}
       </main>

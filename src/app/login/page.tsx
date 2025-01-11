@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -79,10 +80,11 @@ export default function LoginPage() {
       <div className="w-full max-w-md p-6 bg-dark-secondary text-dark-text-primary rounded-lg shadow-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img
+          <Image
             src="https://onfiber.com.mx/Logo.svg"
+            width= {24}
+            height={24}
             alt="OnFiber Logo"
-            className="h-16"
           />
         </div>
 
