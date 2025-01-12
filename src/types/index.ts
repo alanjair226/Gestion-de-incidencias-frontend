@@ -57,11 +57,6 @@ export interface UserScore {
     period: Period;
 }
 
-export interface UserScore {
-    id: number;
-    score: number;
-    period: Period;
-}
 
 export interface User {
     id: number;

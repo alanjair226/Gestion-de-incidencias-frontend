@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { getUserIncidences } from "../../../../../utils/incidences";
 import { getUserPeriods } from "../../../../../utils/periods";
-import { Incidence, UserScore } from "../../../../../types";
+import { Incidence } from "../../../../../types";
 
-export default function PeriodDetails() {
+function PeriodDetailsContent() {
   const [incidences, setIncidences] = useState<Incidence[]>([]);
   const [score, setScore] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { id: periodId } = useParams();
-
-  const userId = parseInt(searchParams.get("userId") || "0", 10); // Obtener el userId de los query params
+  const userId = parseInt(searchParams.get("userId") || "0", 10);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,17 +31,20 @@ export default function PeriodDetails() {
         }
 
         const parsedPeriodId = Array.isArray(periodId) ? parseInt(periodId[0], 10) : parseInt(periodId || "0", 10);
-
         if (isNaN(parsedPeriodId)) {
           throw new Error("El ID del periodo no es válido.");
         }
 
-        // Obtener las incidencias del periodo
-        const incidencesData = await getUserIncidences(userId, parsedPeriodId, token);
+        setIsLoading(true); // Set loading state to true before fetching data
+
+        // Fetch incidences and score in parallel using Promise.all
+        const [incidencesData, periodsData] = await Promise.all([
+          getUserIncidences(userId, parsedPeriodId, token),
+          getUserPeriods(userId, token),
+        ]);
+
         setIncidences(incidencesData);
 
-        // Obtener la calificación del periodo
-        const periodsData: UserScore[] = await getUserPeriods(userId, token);
         const selectedPeriod = periodsData.find((p) => p.period.id === parsedPeriodId);
         setScore(selectedPeriod ? selectedPeriod.score : null);
       } catch (err: unknown) {
@@ -53,7 +55,7 @@ export default function PeriodDetails() {
           console.error(err);
         }
       } finally {
-        setLoading(false);
+        setIsLoading(false); // Set loading state to false after fetching data
       }
     };
 
@@ -80,7 +82,7 @@ export default function PeriodDetails() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {loading ? (
+        {isLoading ? (
           <div className="text-center text-lg font-semibold text-dark-text-secondary">
             Cargando detalles del periodo...
           </div>
@@ -104,36 +106,44 @@ export default function PeriodDetails() {
               </p>
             ) : (
               <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  {incidences.map((incidence) => (
-    <li
-      key={incidence.id}
-      className="relative p-6 bg-dark-secondary rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 cursor-pointer"
-      onClick={() => router.push(`/user/incidences/${incidence.id}`)}
-    >
-      {/* Indicadores */}
-      {incidence.status && (
-        <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
-      )}
-      {!incidence.valid && (
-        <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
-      )}
+                {incidences.map((incidence) => (
+                  <li
+                    key={incidence.id}
+                    className="relative p-6 bg-dark-secondary rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 cursor-pointer"
+                    onClick={() => router.push(`/user/incidences/${incidence.id}`)}
+                  >
+                    {/* Indicators */}
+                    {incidence.status && (
+                      <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
+                    )}
+                    {!incidence.valid && (
+                      <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
+                    )}
 
-      <h2 className="text-xl font-bold text-dark-accent mb-4">
-        {incidence.description}
-      </h2>
-      <p className="text-sm text-dark-text-secondary mb-2">
-        <strong>Severidad:</strong> {incidence.severity.name}
-      </p>
-      <p className="text-sm text-dark-text-secondary mb-2">
-        <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
-      </p>
-    </li>
-  ))}
-</ul>
+                    <h2 className="text-xl font-bold text-dark-accent mb-4">
+                      {incidence.description}
+                    </h2>
+                    <p className="text-sm text-dark-text-secondary mb-2">
+                      <strong>Severidad:</strong> {incidence.severity.name}
+                    </p>
+                    <p className="text-sm text-dark-text-secondary mb-2">
+                      <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         )}
       </main>
     </div>
+  );
+}
+
+export default function PeriodDetailsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PeriodDetailsContent />
+    </Suspense>
   );
 }
