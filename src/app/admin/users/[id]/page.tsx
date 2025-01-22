@@ -87,24 +87,31 @@ export default function UserDetailsPage() {
         router.push("/login");
         return;
       }
-
+  
       if (!newIncidence.description || !newIncidence.severity || !newIncidence.period) {
         alert("Debe llenar todos los campos requeridos.");
         return;
       }
-
+  
       await createIncidence(newIncidence, token);
       alert("Incidencia creada exitosamente.");
-
+  
       // Resetear campos y actualizar incidencias
       setNewIncidence((prev) => ({ ...prev, description: "", severity: "" }));
+  
+      // Actualizar las incidencias
       const updatedIncidences = await getUserIncidences(userId, currentPeriodId!, token);
       setCurrentIncidences(updatedIncidences);
+  
+      // Actualizar el score del periodo
+      const periodsData: UserScore[] = await getUserPeriods(userId, token);
+      const selectedPeriod = periodsData.find((p) => p.period.id === currentPeriodId);
+      setScore(selectedPeriod ? selectedPeriod.score : null);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Ocurrió un error inesperado');
+        setError("Ocurrió un error inesperado");
         console.error(err);
       }
     }
