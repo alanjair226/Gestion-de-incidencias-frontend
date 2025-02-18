@@ -6,22 +6,27 @@ import { getUserDetails } from "../../../../utils/admin";
 import { getCommonIncidences } from "../../../../utils/common-incidences";
 import { getSeverities } from "../../../../utils/severities";
 import { getCurrentPeriod, getUserPeriods } from "../../../../utils/periods";
-import { getUserIncidences, createIncidence } from "../../../../utils/incidences";
+import {
+  getUserIncidences,
+  createIncidence,
+  uploadIncidenceImage,
+} from "../../../../utils/incidences";
 import { User, CommonIncidence, Severity, Incidence, UserScore } from "../../../../types";
 import Image from "next/image";
 
-
 export default function UserDetailsPage() {
   const { id } = useParams();
-  const userId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id || "0", 10); // Convertir ID
+  const userId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id || "0", 10);
   const router = useRouter();
 
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [user, setUser] = useState<User | null>(null);
   const [commonIncidences, setCommonIncidences] = useState<CommonIncidence[]>([]);
   const [severities, setSeverities] = useState<Severity[]>([]);
   const [currentIncidences, setCurrentIncidences] = useState<Incidence[]>([]);
-  const [currentPeriodId, setCurrentPeriodId] = useState<number | null>(null); // ID del periodo actual
-  const [score, setScore] = useState<number | null>(null); // Score del periodo actual
+  const [currentPeriodId, setCurrentPeriodId] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
   const [newIncidence, setNewIncidence] = useState({
     description: "",
     assigned_to: userId,
@@ -69,7 +74,7 @@ export default function UserDetailsPage() {
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError('Ocurrió un error inesperado');
+          setError("Ocurrió un error inesperado");
           console.error(err);
         }
       } finally {
@@ -87,22 +92,38 @@ export default function UserDetailsPage() {
         router.push("/login");
         return;
       }
-  
+
       if (!newIncidence.description || !newIncidence.severity || !newIncidence.period) {
         alert("Debe llenar todos los campos requeridos.");
         return;
       }
-  
-      await createIncidence(newIncidence, token);
+
+      // Crear la incidencia y obtener la data (incluye el id)
+      const createdIncidence = await createIncidence(newIncidence, token);
+      if (!createdIncidence) {
+        alert("No se pudo crear la incidencia");
+        return;
+      }
       alert("Incidencia creada exitosamente.");
-  
-      // Resetear campos y actualizar incidencias
+
+      // Subir cada imagen seleccionada
+      if (selectedFiles.length > 0) {
+        await Promise.all(
+          selectedFiles.map((file) => uploadIncidenceImage(createdIncidence.id, file, token))
+        );
+        alert("Imágenes subidas exitosamente.");
+      }
+
+      // Resetear campos: descripción, severidad, incidencia común y archivos
       setNewIncidence((prev) => ({ ...prev, description: "", severity: "" }));
-  
+      setSelectedIncidence(null);
+      setSelectedFiles([]);
+      setFileInputKey(Date.now()); // Forzar reinicio del input file
+
       // Actualizar las incidencias
       const updatedIncidences = await getUserIncidences(userId, currentPeriodId!, token);
       setCurrentIncidences(updatedIncidences);
-  
+
       // Actualizar el score del periodo
       const periodsData: UserScore[] = await getUserPeriods(userId, token);
       const selectedPeriod = periodsData.find((p) => p.period.id === currentPeriodId);
@@ -174,8 +195,11 @@ export default function UserDetailsPage() {
             <section className="flex flex-col md:flex-row items-center justify-between mb-8">
               <div className="flex flex-col items-center">
                 <Image
-                  src={user?.image || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
-                  alt={user?.username || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
+                  src={
+                    user?.image ||
+                    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
+                  }
+                  alt={user?.username || "Imagen de perfil"}
                   width={128}
                   height={128}
                   className="rounded-full mb-4"
@@ -184,12 +208,13 @@ export default function UserDetailsPage() {
                 <p className="mt-2 text-lg">
                   <strong>Calificación:</strong>{" "}
                   <span
-                    className={`font-bold ${score !== null && score >= 85
+                    className={`font-bold ${
+                      score !== null && score >= 85
                         ? "text-dark-success"
                         : score !== null
-                          ? "text-dark-warning"
-                          : "text-dark-error"
-                      }`}
+                        ? "text-dark-warning"
+                        : "text-dark-error"
+                    }`}
                   >
                     {score !== null ? score : "No disponible"}
                   </span>
@@ -239,6 +264,18 @@ export default function UserDetailsPage() {
                     </option>
                   ))}
                 </select>
+                <input
+                  key={fileInputKey}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setSelectedFiles(Array.from(e.target.files));
+                    }
+                  }}
+                  className="mt-4"
+                />
               </div>
               <button
                 onClick={handleCreateIncidence}

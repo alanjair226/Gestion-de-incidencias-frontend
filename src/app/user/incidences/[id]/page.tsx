@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Incidence } from "../../../../types";
 import { addCommentToIncidence } from "../../../../utils/incidences";
+import Image from "next/image";
+
+// Función para transformar el enlace de Google Drive a un enlace directo
+const getDirectGoogleDriveUrl = (url: string): string => {
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+  return url;
+};
 
 export default function IncidenceDetails() {
   const [incidence, setIncidence] = useState<Incidence | null>(null);
@@ -43,7 +53,7 @@ export default function IncidenceDetails() {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Ocurrió un error inesperado');
+        setError("Ocurrió un error inesperado");
         console.error(err);
       }
     } finally {
@@ -80,7 +90,7 @@ export default function IncidenceDetails() {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Ocurrió un error inesperado');
+        setError("Ocurrió un error inesperado");
         console.error(err);
       }
     }
@@ -89,9 +99,7 @@ export default function IncidenceDetails() {
   const getStatusLabel = () => {
     if (!incidence) return null;
     if (incidence.status) {
-      return (
-        <span className="text-dark-warning font-semibold">En Revisión</span>
-      );
+      return <span className="text-dark-warning font-semibold">En Revisión</span>;
     }
     if (!incidence.comment) {
       return null;
@@ -121,7 +129,7 @@ export default function IncidenceDetails() {
         <div className="text-center text-lg text-dark-error">Error: {error}</div>
       ) : incidence ? (
         <>
-          {/* Incidence Details */}
+          {/* Detalles de la incidencia */}
           <div className="p-6 bg-dark-secondary rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-bold mb-4">{incidence.description}</h2>
             <div className="flex flex-wrap gap-4 mb-4">
@@ -148,7 +156,33 @@ export default function IncidenceDetails() {
             </p>
           </div>
 
-          {/* Existing Comment */}
+          {/* Sección de Imágenes */}
+          {incidence.images && incidence.images.length > 0 && (
+            <div className="p-6 bg-dark-secondary rounded-lg shadow-md mb-6">
+              <h3 className="text-xl font-bold mb-4">Imágenes de la Incidencia</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
+                {incidence.images.map((image) => (
+                  <a
+                    key={image.id}
+                    href={getDirectGoogleDriveUrl(image.url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full md:max-w-[300px]"
+                  >
+                    <Image
+                      src={getDirectGoogleDriveUrl(image.url)}
+                      width={300}
+                      height={200}
+                      alt={`Imagen ${image.id}`}
+                      className="w-full h-auto object-cover rounded"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Comentario existente */}
           {incidence.comment && (
             <div className="p-6 bg-dark-secondary rounded-lg shadow-md mb-6">
               <h3 className="text-lg font-bold mb-2">Comentario existente</h3>
@@ -156,7 +190,7 @@ export default function IncidenceDetails() {
             </div>
           )}
 
-          {/* Add Comment Form */}
+          {/* Formulario para añadir comentario */}
           {incidence.assigned_to.id === currentUserId &&
             !incidence.status &&
             !incidence.comment &&
@@ -180,7 +214,7 @@ export default function IncidenceDetails() {
               </div>
             )}
 
-          {/* Back Button */}
+          {/* Botón para regresar */}
           <div className="text-center">
             <button
               onClick={() => router.back()}

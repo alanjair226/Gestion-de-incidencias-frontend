@@ -67,11 +67,10 @@ export async function updateIncidenceStatus(
 export async function createIncidence(
   incidenceData: { description: string; assigned_to: number; severity: string; period: number },
   token: string
-): Promise<void> {
+): Promise<{ id: number } | null> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   try {
-    console.log("Datos enviados a la API:", incidenceData); // Verificar los datos enviados
     const response = await fetch(`${apiUrl}/incidences`, {
       method: "POST",
       headers: {
@@ -83,15 +82,46 @@ export async function createIncidence(
 
     if (!response.ok) {
       const errorDetails = await response.json();
-      console.error("Error en la respuesta del servidor:", errorDetails);
       throw new Error(
         `No se pudo crear la incidencia. Código: ${response.status}, Mensaje: ${errorDetails.message || "Error desconocido"}`
       );
     }
 
-    console.log("Incidencia creada exitosamente");
+    const data = await response.json();
+    return data; // Retorna la incidencia creada con su ID
   } catch (error) {
     console.error("Error al crear la incidencia:", error);
+    return null;
+  }
+}
+
+export async function uploadIncidenceImage(
+  incidenceId: number,
+  file: File,
+  token: string
+): Promise<void> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  try {
+    const formData = new FormData();
+    formData.append("incidenceId", incidenceId.toString());
+    formData.append("file", file);
+
+    const response = await fetch(`${apiUrl}/image-incidence`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (response.status !== 201) {
+      throw new Error(`No se pudo subir la imagen. Código: ${response.status}`);
+    }
+
+    console.log("Imagen subida con éxito a la incidencia:", incidenceId);
+  } catch (error) {
+    console.error("Error al subir la imagen de la incidencia:", error);
     throw error;
   }
 }

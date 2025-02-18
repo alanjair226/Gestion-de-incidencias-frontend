@@ -20,30 +20,35 @@ export interface UpdateIncidenceBody {
 
 // Tipo para una incidencia
 export interface Incidence {
-    id: number;
-    description: string;
-    value: number;
-    status: boolean;
-    valid: boolean;
-    created_at: string;
-    comment: string | null;
-    assigned_to: {
-        id: number;
-        username: string;
-        image: string;
-    };
-    created_by: {
-        id: number;
-        username: string;
-        image: string;
-    };
-    severity: {
-        id: number;
-        name: string;
-        value: number;
-    };
-    period: Period;
+  id: number;
+  description: string;
+  value: number;
+  status: boolean;
+  valid: boolean;
+  created_at: string;
+  comment: string | null;
+  assigned_to: {
+      id: number;
+      username: string;
+      image: string;
+  };
+  created_by: {
+      id: number;
+      username: string;
+      image: string;
+  };
+  severity: {
+      id: number;
+      name: string;
+      value: number;
+  };
+  period: Period;
+  images: {
+      id: number;
+      url: string;
+  }[];
 }
+
 
 // Tipo para el score del usuario
 export interface UserScore {
@@ -82,4 +87,6 @@ export interface User {
     incidence: string;
     severity: Severity; // Relación con el tipo de severidad
   }
+
+  
   
