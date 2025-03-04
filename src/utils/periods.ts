@@ -115,3 +115,21 @@ export async function closePeriod(periodId: number, token: string): Promise<void
   }
 }
 
+export async function downloadReport(periodId: number, token: string): Promise<Blob> {
+  try {
+    const response = await fetch(`${apiUrl}/reports/incidences/${periodId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("No se pudo descargar el reporte");
+    }
+    return await response.blob();
+  } catch (error) {
+    console.error("Error al descargar el reporte:", error);
+    throw error;
+  }
+}
+
