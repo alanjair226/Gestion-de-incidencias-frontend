@@ -86,10 +86,10 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Image
-            src="https://onfiber.com.mx/Logo.svg"
-            width= {24}
-            height={24}
-            alt="OnFiber Logo"
+            src={`${process.env.NEXT_PUBLIC_LOGO_URL}`}
+            width={100}
+            height={100}
+            alt={`${process.env.NEXT_PUBLIC_COMPANY_NAME || "Logo"}`}
           />
         </div>
 

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getUserIncidences } from "../../../../utils/incidences";
 import { getUserPeriods } from "../../../../utils/periods";
 import { Incidence, UserScore } from "../../../../types";
+import HeaderUser from "@/components/HeaderUser";
 
 export default function PeriodDetails() {
   const [incidences, setIncidences] = useState<Incidence[]>([]);
@@ -63,11 +64,11 @@ export default function PeriodDetails() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">Detalles del Periodo</h1>
-        </div>
-      </header>
+      <HeaderUser 
+      title="Mis Periodos" 
+      ButtonText="Volver a periodos"
+      ButtonRoute="/user/periods"
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

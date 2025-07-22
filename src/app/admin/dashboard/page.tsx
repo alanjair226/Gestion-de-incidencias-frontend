@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Incidence, User } from "../../../types";
 import { getUsers, getAdminNotifications } from "../../../utils/admin";
 import Image from "next/image";
+import Header from "@/components/Header";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
@@ -13,6 +14,7 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState<string>(""); // Estado para el filtro
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "-";
   const router = useRouter();
 
   useEffect(() => {
@@ -55,27 +57,10 @@ export default function AdminDashboard() {
     setFilteredUsers(users.filter((user) => user.username.toLowerCase().includes(lowerSearch)));
   }, [search, users]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
-  };
-
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-          <h1 className="text-3xl font-bold text-dark-accent text-center md:text-left">
-            Incidencias OnFiber
-          </h1>
-          <button
-            onClick={handleLogout}
-            className="mt-4 md:mt-0 bg-dark-error text-dark-primary py-2 px-6 rounded-lg shadow hover:bg-red-600 transition"
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
+      <Header title={`Incidencias ${COMPANY_NAME}`} />
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

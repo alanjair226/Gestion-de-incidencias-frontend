@@ -13,6 +13,7 @@ import {
 } from "../../../../utils/incidences";
 import { User, CommonIncidence, Severity, Incidence, UserScore } from "../../../../types";
 import Image from "next/image";
+import Header from "@/components/Header";
 
 export default function UserDetailsPage() {
   const { id } = useParams();
@@ -167,11 +168,7 @@ export default function UserDetailsPage() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">Detalles del Usuario</h1>
-        </div>
-      </header>
+      <Header title="Detalles del Usuario"/>
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

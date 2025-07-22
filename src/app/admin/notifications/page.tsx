@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getAdminNotifications } from "../../../utils/admin";
 import { updateIncidenceStatus } from "../../../utils/incidences";
 import { Incidence } from "../../../types";
+import Header from "@/components/Header";
 
 export default function AdminNotifications() {
   const [notifications, setNotifications] = useState<Incidence[]>([]);
@@ -67,13 +68,7 @@ export default function AdminNotifications() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
   {/* Header */}
-  <header className="bg-dark-secondary py-6 shadow-md">
-    <div className="container mx-auto px-6 flex justify-center items-center">
-      <h1 className="text-3xl font-bold text-dark-accent">
-        Notificaciones de Incidencias
-      </h1>
-    </div>
-  </header>
+  <Header title="Notificaciones de Incidencias"/>
 
   {/* Main Content */}
   <main className="container mx-auto px-6 py-8">

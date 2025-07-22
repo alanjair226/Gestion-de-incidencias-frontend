@@ -6,6 +6,7 @@ import { getCurrentPeriod } from "../../../utils/periods";
 import { getUserIncidences } from "../../../utils/incidences";
 import { getUserScore } from "../../../utils/scores";
 import { Incidence } from "../../../types";
+import HeaderUser from "@/components/HeaderUser";
 
 export default function UserIncidences() {
   const [incidences, setIncidences] = useState<Incidence[]>([]);
@@ -64,11 +65,6 @@ export default function UserIncidences() {
     fetchData();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
-  };
-
   const getScoreClass = (score: number | null): string => {
     if (score === null) return "text-dark-text-secondary";
     if (score >= 85) return "text-dark-success";
@@ -79,27 +75,7 @@ export default function UserIncidences() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-6 gap-4">
-          <h1 className="text-3xl font-bold text-dark-accent text-center md:text-left">
-            Mis Incidencias
-          </h1>
-          <div className="flex flex-col md:flex-row gap-2">
-            <button
-              onClick={handleLogout}
-              className="bg-dark-error text-dark-primary py-2 px-4 rounded hover:bg-red-600 transition"
-            >
-              Cerrar sesión
-            </button>
-            <button
-              onClick={() => router.push("/user/periods")}
-              className="bg-dark-accent text-dark-primary py-2 px-4 rounded hover:bg-purple-700 transition"
-            >
-              Ver periodos anteriores
-            </button>
-          </div>
-        </div>
-      </header>
+      <HeaderUser title="Mis Incidencias"/>
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

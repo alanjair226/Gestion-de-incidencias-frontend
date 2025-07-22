@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getPeriods, createPeriod, closePeriod, downloadReport } from "../../../../utils/periods";
 import { Period } from "../../../../types";
+import Header from "@/components/Header";
 
 export default function PeriodsPage() {
   const [periods, setPeriods] = useState<Period[]>([]);
@@ -91,13 +92,7 @@ export default function PeriodsPage() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">
-            Configuración de Periodos
-          </h1>
-        </div>
-      </header>
+      <Header title="Configuración de Periodos"/>
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

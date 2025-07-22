@@ -5,6 +5,7 @@ import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { getUserIncidences } from "../../../../../utils/incidences";
 import { getUserPeriods } from "../../../../../utils/periods";
 import { Incidence } from "../../../../../types";
+import Header from "@/components/Header";
 
 function PeriodDetailsContent() {
   const [incidences, setIncidences] = useState<Incidence[]>([]);
@@ -72,13 +73,7 @@ function PeriodDetailsContent() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">
-            Detalles del Periodo
-          </h1>
-        </div>
-      </header>
+      <Header title="Detalles del Periodo"/>
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -8,13 +9,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl font-bold text-dark-accent text-center">
-            Configuración
-          </h1>
-        </div>
-      </header>
+      <Header title="Configuración"/>
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

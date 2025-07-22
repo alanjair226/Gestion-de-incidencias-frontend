@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserPeriods } from "../../../utils/periods";
 import { UserScore } from "../../../types";
+import HeaderUser from "@/components/HeaderUser";
 
 export default function UserPeriods() {
   const [periods, setPeriods] = useState<UserScore[]>([]);
@@ -56,11 +57,11 @@ export default function UserPeriods() {
   return (
     <div className="min-h-screen bg-dark-primary text-dark-text-primary">
       {/* Header */}
-      <header className="bg-dark-secondary py-6 shadow-md">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-3xl font-bold text-dark-accent">Mis Periodos</h1>
-        </div>
-      </header>
+      <HeaderUser 
+      title="Mis Periodos" 
+      ButtonText="Volver a incidencias"
+      ButtonRoute="/user/incidences"
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
