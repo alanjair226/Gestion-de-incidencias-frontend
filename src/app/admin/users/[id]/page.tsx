@@ -33,9 +33,20 @@ export default function UserDetailsPage() {
     severity: "",
     period: 0,
   });
-  const [selectedIncidence, setSelectedIncidence] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [commonIncidenceSearch, setCommonIncidenceSearch] = useState("");
+  const [showCommonIncidenceList, setShowCommonIncidenceList] = useState(false);
+
+  // Buscar incidencias comunes por palabras clave
+  const filteredCommonIncidences = commonIncidences.filter((ci) => {
+    const search = commonIncidenceSearch.toLowerCase().trim();
+    if (!search) return false;
+    // Divide la búsqueda en palabras y verifica que todas estén presentes
+    return search
+      .split(" ")
+      .every((word) => ci.incidence.toLowerCase().includes(word));
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,7 +127,6 @@ export default function UserDetailsPage() {
 
       // Resetear campos: descripción, severidad, incidencia común y archivos
       setNewIncidence((prev) => ({ ...prev, description: "", severity: "" }));
-      setSelectedIncidence(null);
       setSelectedFiles([]);
       setFileInputKey(Date.now()); // Forzar reinicio del input file
 
@@ -138,26 +148,9 @@ export default function UserDetailsPage() {
     }
   };
 
-  const handleCommonIncidenceChange = (value: string) => {
-    setSelectedIncidence(value);
-    const selected = commonIncidences.find((ci) => ci.incidence === value);
-    if (selected) {
-      setNewIncidence({
-        ...newIncidence,
-        description: selected.incidence,
-        severity: selected.severity.name,
-      });
-    } else {
-      setNewIncidence({
-        ...newIncidence,
-        description: "",
-        severity: "",
-      });
-    }
-  };
+
 
   const handleDescriptionChange = (value: string) => {
-    setSelectedIncidence(null); // Restablecer incidencia común seleccionada
     setNewIncidence((prev) => ({
       ...prev,
       description: value,
@@ -165,7 +158,6 @@ export default function UserDetailsPage() {
   };
 
   const handleSeverityChange = (value: string) => {
-    setSelectedIncidence(null); // Restablecer incidencia común seleccionada
     setNewIncidence((prev) => ({
       ...prev,
       severity: value,
@@ -234,18 +226,42 @@ export default function UserDetailsPage() {
             <section className="mb-8">
               <h2 className="text-xl font-bold mb-4">Nueva Incidencia</h2>
               <div className="flex flex-col gap-4">
-                <select
-                  value={selectedIncidence || ""}
-                  onChange={(e) => handleCommonIncidenceChange(e.target.value)}
-                  className="w-full p-2 rounded bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
-                >
-                  <option value="">Seleccionar Incidencia Común</option>
-                  {commonIncidences.map((ci) => (
-                    <option key={ci.id} value={ci.incidence}>
-                      {ci.incidence}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={commonIncidenceSearch}
+                    onChange={(e) => {
+                      setCommonIncidenceSearch(e.target.value);
+                      setShowCommonIncidenceList(true);
+                    }}
+                    onFocus={() => setShowCommonIncidenceList(true)}
+                    onBlur={() => setTimeout(() => setShowCommonIncidenceList(false), 150)}
+                    placeholder="Buscar incidencia común..."
+                    className="w-full p-2 rounded bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
+                    autoComplete="off"
+                  />
+                  {showCommonIncidenceList && filteredCommonIncidences.length > 0 && (
+                    <ul className="absolute left-0 right-0 top-full bg-dark-secondary border border-dark-accent rounded w-full max-h-48 overflow-y-auto mt-1 z-20">
+                      {filteredCommonIncidences.map((ci) => (
+                        <li
+                          key={ci.id}
+                          className="p-2 cursor-pointer hover:bg-dark-accent hover:text-dark-primary"
+                          onMouseDown={() => {
+                            setCommonIncidenceSearch(ci.incidence);
+                            setShowCommonIncidenceList(false);
+                            setNewIncidence({
+                              ...newIncidence,
+                              description: ci.incidence,
+                              severity: ci.severity.name,
+                            });
+                          }}
+                        >
+                          {ci.incidence}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 <textarea
                   placeholder="Descripción personalizada"
                   value={newIncidence.description}
