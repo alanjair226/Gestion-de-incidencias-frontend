@@ -191,7 +191,7 @@ export default function UserDetailsPage() {
                   alt={user?.username || "Imagen de perfil"}
                   width={128}
                   height={128}
-                  className="rounded-full mb-4"
+                  className="rounded-full mb-4 aspect-square object-cover"
                 />
                 <h2 className="text-2xl font-bold">{user?.username}</h2>
                 <p className="mt-2 text-lg">
