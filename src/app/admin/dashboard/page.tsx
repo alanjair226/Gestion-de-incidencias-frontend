@@ -52,7 +52,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen text-dark-text-primary">
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto">
         {loading ? (
           <div className="text-center text-lg font-semibold text-dark-text-secondary">
             Cargando información...
