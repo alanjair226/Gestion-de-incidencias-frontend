@@ -6,27 +6,29 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  // tailwind.config.js
   theme: {
     extend: {
       colors: {
-        dark: {
-          primary: '#121212',
-          secondary: '#1E1E1E',
-          bg: '#101113',
-          text: {
-            primary: '#E0E0E0',
-            secondary: '#A0A0A0',
+        "dark": {
+          "primary": "#1C1C1E",
+          "secondary": "#252528",
+          "bg": "#121214",
+          "text": {
+            "primary": "#EBEBF0",
+            "secondary": "#A0A0A5"
           },
-          accent: '#BB86FC',
-          success: '#04b224',
-          warning: '#FFC107',
-          error: '#e14460',
-          period: {
-            actual: "#15a64f", // Verde oscuro
-            past: "#e94949", // Rojo oscuro
+          "accent": "#D08DEA",
+          "success": "#28A745",
+          "warning": "#FFC107",
+          "error": "#ca3d3d",
+          "period": {
+            "actual": "#20C997",
+            "past": "#FD7E14"
           },
-        },
-      },
+          "border": "#7f7f7f"
+        }
+      }
     },
   },
   plugins: [],
