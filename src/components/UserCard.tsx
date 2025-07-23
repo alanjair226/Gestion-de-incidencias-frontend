@@ -21,30 +21,29 @@ const UserCard: React.FC<UserCardProps> = ({ user, onClick }) => {
     // ********* FUNCIÓN DE EMOJIS CON MÁS THRESHOLDS "MAMONES" *********
     const getScoreEmoji = (score: number | null) => {
         if (score === null) {
-            return "👻"; // Desaparecido en combate
-        } else if (score >= 98) {
-            return "🏆👑"; // Campeón indiscutible, pero ¿a qué costo?
+            return "👻";
         } else if (score >= 95) {
-            return "🚀✨"; // Casi perfecto, pero el "casi" duele
+            return "🏆👑";
         } else if (score >= 90) {
-            return "😎👌"; // Lo suficientemente bueno para no molestar
+            return "🚀✨";
         } else if (score >= 85) {
-            return "📈🤨"; // Va bien, pero con sospecha
+            return "😎👌";
         } else if (score >= 80) {
-            return "🤷‍♀️👏"; // Un 'meh' con aplauso sarcástico
+            return "📈🤨";
+        } else if (score >= 75) {
+            return "🤷‍♀️";
         } else if (score >= 70) {
-            return "🤔🙄"; // Preguntándose si fue suerte
+            return "🤔🙄";
         } else if (score >= 60) {
-            return "📉🤦‍♂️"; // De bajada, un facepalm inevitable
+            return "📉🤦‍♂️";
         } else if (score >= 50) {
-            return "🚩🚨"; // ¡ALERTA! Esto ya no es divertido
+            return "🚩🚨";
         } else if (score >= 30) {
-            return "😵‍💫🗑️"; // Confusion y resignación
+            return "😵‍💫🗑️";
         } else {
-            return "💀⚰️"; // Totalmente acabado, RIP rendimiento
+            return "💀⚰️";
         }
     };
-    // *******************************************************************
 
     useEffect(() => {
         const fetchUserScore = async () => {
