@@ -24,21 +24,26 @@ const HeaderUser: React.FC<HeaderUserProps> = ({
   };
 
   return (
-    <header className="bg-dark-secondary py-6 shadow-md">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-6 gap-4">
-        <h1 className="text-3xl font-bold text-dark-accent text-center md:text-left">
+    <header className="fixed top-0 left-0 w-full z-50 bg-dark-primary py-3 shadow-md border-b-2 border-white/10 md:py-2">
+      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4">
+        {/* Título */}
+        <h1 className="text-xl font-bold text-dark-text-primary text-center md:text-2xl md:text-left whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
           {title}
         </h1>
-        <div className="flex flex-col md:flex-row gap-2">
+
+        {/* Contenedor de botones */}
+        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mt-2 md:mt-0">
+          {/* Botón de acción */}
           <button
             onClick={handleViewPeriods}
-            className="bg-dark-accent text-dark-primary py-2 px-4 rounded hover:bg-purple-700 transition"
+            className="py-1.5 px-3 bg-dark-accent text-dark-primary rounded-lg shadow-md hover:shadow-lg transition text-center font-semibold text-sm md:text-base whitespace-nowrap"
           >
             {ButtonText}
           </button>
+          {/* Botón de cerrar sesión */}
           <button
             onClick={handleLogout}
-            className="bg-dark-error text-dark-primary py-2 px-4 rounded hover:bg-red-600 transition"
+            className="py-1.5 px-3 bg-dark-error text-dark-primary rounded-lg shadow hover:bg-red-600 transition text-sm md:text-base whitespace-nowrap"
           >
             Cerrar sesión
           </button>
