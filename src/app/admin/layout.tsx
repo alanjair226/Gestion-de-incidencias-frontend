@@ -27,7 +27,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} mt-24 sm:mt-20 md:mt-10  antialiased dark:bg-dark-bg dark:text-dark-text-primary bg-white text-black lg:mx-40`}
+                className={`${geistSans.variable} ${geistMono.variable} mt-40 sm:mt-28 md:mt-20  antialiased dark:bg-dark-bg dark:text-dark-text-primary bg-white text-black lg:mx-40`}
             >
                 <Header title="Panel de Administración" />
                 {children}
