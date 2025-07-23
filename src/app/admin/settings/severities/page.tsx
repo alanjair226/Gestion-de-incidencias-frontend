@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { getSeverities, createSeverity } from "../../../../utils/severities";
 import { Severity } from "../../../../types";
-import Header from "@/components/Header";
 
 export default function SeveritiesPage() {
   const [severities, setSeverities] = useState<Severity[]>([]);
@@ -59,9 +58,7 @@ export default function SeveritiesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-primary text-dark-text-primary">
-      {/* Header */}
-      <Header title="Configuración de Severidades"/>
+    <div className="min-h-screen text-dark-text-primary">
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

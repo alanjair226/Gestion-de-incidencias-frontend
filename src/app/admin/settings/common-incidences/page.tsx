@@ -8,7 +8,6 @@ import {
 } from "../../../../utils/common-incidences";
 import { getSeverities } from "../../../../utils/severities";
 import { CommonIncidence, Severity } from "../../../../types";
-import Header from "@/components/Header";
 
 export default function CommonIncidencesPage() {
   const [commonIncidences, setCommonIncidences] = useState<CommonIncidence[]>([]);
@@ -110,9 +109,7 @@ export default function CommonIncidencesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-primary text-dark-text-primary">
-  {/* Header */}
-  <Header title="Configuración de Incidencias Comunes"/>
+    <div className="min-h-screen text-dark-text-primary">
 
   {/* Main Content */}
   <main className="container mx-auto px-6 py-8">

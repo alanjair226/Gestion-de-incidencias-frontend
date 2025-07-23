@@ -121,7 +121,7 @@ export default function IncidenceDetails() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-dark-primary text-dark-text-primary">
+    <div className="p-6 min-h-screen text-dark-text-primary">
       <h1 className="text-3xl font-bold text-center mb-6">Detalles de la Incidencia</h1>
       {loading ? (
         <div className="text-center text-lg">Cargando incidencia...</div>

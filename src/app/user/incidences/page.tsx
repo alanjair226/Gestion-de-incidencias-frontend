@@ -13,6 +13,7 @@ export default function UserIncidences() {
   const [currentScore, setCurrentScore] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function UserIncidences() {
         }
 
         const payload = JSON.parse(atob(token.split(".")[1]));
+        setRole(payload.role); // Guarda el rol aquí
 
         // Validar si el token ha expirado
         const isExpired = payload.exp * 1000 < Date.now();
@@ -73,9 +75,21 @@ export default function UserIncidences() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-primary text-dark-text-primary">
+    <div className="min-h-screen text-dark-text-primary">
       {/* Header */}
-      <HeaderUser title="Mis Incidencias"/>
+      <HeaderUser
+        title="Mis Incidencias"
+        ButtonText={
+          role === "admin" || role === "superadmin"
+            ? "Volver al dashboard"
+            : undefined
+        }
+        ButtonRoute={
+          role === "admin" || role === "superadmin"
+            ? "/admin/dashboard"
+            : undefined
+        }
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">

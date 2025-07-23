@@ -71,7 +71,7 @@ function PeriodDetailsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-primary text-dark-text-primary">
+    <div className="min-h-screen text-dark-text-primary">
       {/* Header */}
       <Header title="Detalles del Periodo"/>
 

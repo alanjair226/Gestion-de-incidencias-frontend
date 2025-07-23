@@ -62,7 +62,7 @@ export default function AdminUserPeriods() {
 
   return (
     <Suspense fallback={<div>Cargando periodos del usuario...</div>}>
-      <div className="min-h-screen bg-dark-primary text-dark-text-primary">
+      <div className="min-h-screen text-dark-text-primary">
         <Header title="Periodos del Usuario"/>
         <main className="container mx-auto px-6 py-8">
           {loading ? (

@@ -12,6 +12,7 @@ export default {
         dark: {
           primary: '#121212',
           secondary: '#1E1E1E',
+          bg: '#101113',
           text: {
             primary: '#E0E0E0',
             secondary: '#A0A0A0',
