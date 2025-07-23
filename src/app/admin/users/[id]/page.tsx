@@ -14,6 +14,7 @@ import {
 import { User, CommonIncidence, Severity, Incidence, UserScore } from "../../../../types";
 import Image from "next/image";
 import Header from "@/components/Header";
+import IncidenceCard from "@/components/IncidenceCard";
 
 export default function UserDetailsPage() {
   const { id } = useParams();
@@ -39,11 +40,10 @@ export default function UserDetailsPage() {
   const [commonIncidenceSearch, setCommonIncidenceSearch] = useState("");
   const [showCommonIncidenceList, setShowCommonIncidenceList] = useState(false);
 
-  // Buscar incidencias comunes por palabras clave
   const filteredCommonIncidences = commonIncidences.filter((ci) => {
     const search = commonIncidenceSearch.toLowerCase().trim();
     if (!search) return false;
-    // Divide la búsqueda en palabras y verifica que todas estén presentes
+    
     return search
       .split(" ")
       .every((word) => ci.incidence.toLowerCase().includes(word));
@@ -58,28 +58,23 @@ export default function UserDetailsPage() {
           return;
         }
 
-        // Obtener detalles del usuario
         const userData = await getUserDetails(userId, token);
         setUser(userData);
 
-        // Obtener el periodo actual
         const currentPeriod = await getCurrentPeriod(token);
         setCurrentPeriodId(currentPeriod.id);
         setNewIncidence((prev) => ({ ...prev, period: currentPeriod.id }));
 
-        // Obtener score del periodo actual
         const periodsData: UserScore[] = await getUserPeriods(userId, token);
         const selectedPeriod = periodsData.find((p) => p.period.id === currentPeriod.id);
         setScore(selectedPeriod ? selectedPeriod.score : null);
 
-        // Obtener incidencias comunes y severidades
         const commonIncidencesData = await getCommonIncidences(token);
         setCommonIncidences(commonIncidencesData);
 
         const severitiesData = await getSeverities(token);
         setSeverities(severitiesData);
 
-        // Obtener incidencias del periodo actual
         const incidencesData = await getUserIncidences(userId, currentPeriod.id, token);
         setCurrentIncidences(incidencesData);
       } catch (err: unknown) {
@@ -110,7 +105,6 @@ export default function UserDetailsPage() {
         return;
       }
 
-      // Crear la incidencia y obtener la data (incluye el id)
       const createdIncidence = await createIncidence(newIncidence, token);
       if (!createdIncidence) {
         alert("No se pudo crear la incidencia");
@@ -118,7 +112,6 @@ export default function UserDetailsPage() {
       }
       alert("Incidencia creada exitosamente.");
 
-      // Subir cada imagen seleccionada
       if (selectedFiles.length > 0) {
         await Promise.all(
           selectedFiles.map((file) => uploadIncidenceImage(createdIncidence.id, file, token))
@@ -126,16 +119,13 @@ export default function UserDetailsPage() {
         alert("Imágenes subidas exitosamente.");
       }
 
-      // Resetear campos: descripción, severidad, incidencia común y archivos
       setNewIncidence((prev) => ({ ...prev, description: "", severity: "" }));
       setSelectedFiles([]);
-      setFileInputKey(Date.now()); // Forzar reinicio del input file
+      setFileInputKey(Date.now());
 
-      // Actualizar las incidencias
       const updatedIncidences = await getUserIncidences(userId, currentPeriodId!, token);
       setCurrentIncidences(updatedIncidences);
 
-      // Actualizar el score del periodo
       const periodsData: UserScore[] = await getUserPeriods(userId, token);
       const selectedPeriod = periodsData.find((p) => p.period.id === currentPeriodId);
       setScore(selectedPeriod ? selectedPeriod.score : null);
@@ -148,8 +138,6 @@ export default function UserDetailsPage() {
       }
     }
   };
-
-
 
   const handleDescriptionChange = (value: string) => {
     setNewIncidence((prev) => ({
@@ -168,7 +156,7 @@ export default function UserDetailsPage() {
   return (
     <div className="min-h-screen text-dark-text-primary">
       {/* Header */}
-      <Header title="Detalles del Usuario"/>
+      <Header title="Detalles del Usuario" />
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
@@ -220,8 +208,8 @@ export default function UserDetailsPage() {
             </section>
 
             {/* Formulario Crear Incidencia */}
-            <section className="mb-8">
-              <h2 className="text-xl font-bold mb-4">Nueva Incidencia</h2>
+            <section className="mb-8 p-6 bg-dark-secondary rounded-lg shadow-xl border-2 border-dark-border"> {/* Added styling for the form section */}
+              <h2 className="text-xl font-bold mb-4 text-dark-text-primary">Nueva Incidencia</h2>
               <div className="flex flex-col gap-4">
                 <div className="relative">
                   <input
@@ -234,11 +222,11 @@ export default function UserDetailsPage() {
                     onFocus={() => setShowCommonIncidenceList(true)}
                     onBlur={() => setTimeout(() => setShowCommonIncidenceList(false), 150)}
                     placeholder="Buscar incidencia común..."
-                    className="w-full p-2 rounded bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
+                    className="w-full p-2 rounded bg-dark-primary text-dark-text-primary border border-dark-border focus:outline-none focus:ring-2 focus:ring-dark-accent"
                     autoComplete="off"
                   />
                   {showCommonIncidenceList && filteredCommonIncidences.length > 0 && (
-                    <ul className="absolute left-0 right-0 top-full bg-dark-secondary border border-dark-accent rounded w-full max-h-48 overflow-y-auto mt-1 z-20">
+                    <ul className="absolute left-0 right-0 top-full bg-dark-primary border border-dark-accent rounded w-full max-h-48 overflow-y-auto mt-1 z-20">
                       {filteredCommonIncidences.map((ci) => (
                         <li
                           key={ci.id}
@@ -263,12 +251,12 @@ export default function UserDetailsPage() {
                   placeholder="Descripción personalizada"
                   value={newIncidence.description}
                   onChange={(e) => handleDescriptionChange(e.target.value)}
-                  className="w-full p-2 rounded bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
+                  className="w-full p-2 rounded bg-dark-primary text-dark-text-primary border border-dark-border focus:outline-none focus:ring-2 focus:ring-dark-accent"
                 />
                 <select
                   value={newIncidence.severity}
                   onChange={(e) => handleSeverityChange(e.target.value)}
-                  className="w-full p-2 rounded bg-dark-secondary text-dark-text-primary border border-dark-secondary focus:outline-none focus:ring-2 focus:ring-dark-accent"
+                  className="w-full p-2 rounded bg-dark-primary text-dark-text-primary border border-dark-border focus:outline-none focus:ring-2 focus:ring-dark-accent"
                 >
                   <option value="">Seleccionar Severidad</option>
                   {severities.map((s) => (
@@ -287,12 +275,12 @@ export default function UserDetailsPage() {
                       setSelectedFiles(Array.from(e.target.files));
                     }
                   }}
-                  className="mt-4"
+                  className="mt-4 text-dark-text-secondary" // Added text color for file input
                 />
               </div>
               <button
                 onClick={handleCreateIncidence}
-                className="mt-4 bg-dark-success text-dark-primary py-2 px-4 rounded hover:bg-green-700 transition"
+                className="mt-6 bg-dark-accent text-dark-primary py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity w-full" // Updated button styles
               >
                 Crear Incidencia
               </button>
@@ -300,33 +288,13 @@ export default function UserDetailsPage() {
 
             {/* Incidencias del Periodo Actual */}
             <section>
-              <h2 className="text-xl font-bold mb-4">Incidencias del Periodo Actual</h2>
+              <h2 className="text-xl font-bold mb-4 text-dark-text-primary">Incidencias del Periodo Actual</h2>
               {currentIncidences.length === 0 ? (
-                <p className="text-center">No hay incidencias registradas en el periodo actual.</p>
+                <p className="text-center text-dark-text-secondary">No hay incidencias registradas en el periodo actual.</p>
               ) : (
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {currentIncidences.map((incidence) => (
-                    <li
-                      key={incidence.id}
-                      className="relative p-4 bg-dark-secondary rounded shadow-md hover:shadow-lg transition cursor-pointer"
-                      onClick={() => router.push(`/user/incidences/${incidence.id}`)}
-                    >
-                      {/* Indicadores */}
-                      {incidence.status && (
-                        <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
-                      )}
-                      {!incidence.valid && (
-                        <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
-                      )}
-
-                      <h3 className="font-bold text-dark-accent">{incidence.description}</h3>
-                      <p className="text-sm text-dark-text-secondary">
-                        <strong>Severidad:</strong> {incidence.severity.name}
-                      </p>
-                      <p className="text-sm text-dark-text-secondary">
-                        <strong>Creado:</strong> {new Date(incidence.created_at).toLocaleString()}
-                      </p>
-                    </li>
+                    <IncidenceCard key={incidence.id} incidence={incidence} /> // Use the new component
                   ))}
                 </ul>
               )}

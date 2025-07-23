@@ -7,6 +7,7 @@ import { getUserIncidences } from "../../../utils/incidences";
 import { getUserScore } from "../../../utils/scores";
 import { Incidence } from "../../../types";
 import HeaderUser from "@/components/HeaderUser";
+import IncidenceCard from "@/components/IncidenceCard"; // Import the IncidenceCard component here
 
 export default function UserIncidences() {
   const [incidences, setIncidences] = useState<Incidence[]>([]);
@@ -26,9 +27,9 @@ export default function UserIncidences() {
         }
 
         const payload = JSON.parse(atob(token.split(".")[1]));
-        setRole(payload.role); // Guarda el rol aquí
+        setRole(payload.role); // Save the role here
 
-        // Validar si el token ha expirado
+        // Validate if the token has expired
         const isExpired = payload.exp * 1000 < Date.now();
         if (isExpired) {
           localStorage.removeItem("token");
@@ -38,10 +39,10 @@ export default function UserIncidences() {
 
         const userId: number = payload.id;
 
-        // Obtener el periodo actual
+        // Get the current period
         const currentPeriod = await getCurrentPeriod(token);
 
-        // Obtener incidencias del periodo actual
+        // Get incidences for the current period
         const incidencesData = await getUserIncidences(
           userId,
           currentPeriod.id,
@@ -49,7 +50,7 @@ export default function UserIncidences() {
         );
         setIncidences(incidencesData);
 
-        // Obtener el score del periodo actual
+        // Get the score for the current period
         const score = await getUserScore(userId, currentPeriod.id, token);
         setCurrentScore(score);
       } catch (err: unknown) {
@@ -120,30 +121,7 @@ export default function UserIncidences() {
             ) : (
               <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {incidences.map((incidence) => (
-                  <li
-                    key={incidence.id}
-                    className="relative p-6 bg-dark-secondary rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer"
-                    onClick={() => router.push(`/user/incidences/${incidence.id}`)}
-                  >
-                    {/* Indicadores */}
-                    {incidence.status && (
-                      <span className="absolute top-2 right-2 w-3 h-3 bg-dark-warning rounded-full"></span>
-                    )}
-                    {!incidence.valid && (
-                      <span className="absolute top-2 right-6 w-3 h-3 bg-dark-success rounded-full"></span>
-                    )}
-
-                    <h2 className="text-xl font-bold text-dark-accent mb-2">
-                      {incidence.description}
-                    </h2>
-                    <p className="text-sm text-dark-text-secondary">
-                      <strong>Severidad:</strong> {incidence.severity.name}
-                    </p>
-                    <p className="text-sm text-dark-text-secondary">
-                      <strong>Creado:</strong>{" "}
-                      {new Date(incidence.created_at).toLocaleString()}
-                    </p>
-                  </li>
+                  <IncidenceCard key={incidence.id} incidence={incidence} /> // Use the IncidenceCard component here
                 ))}
               </ul>
             )}
