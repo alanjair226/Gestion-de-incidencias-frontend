@@ -38,6 +38,22 @@ export async function addCommentToIncidence(incidenceId: number, comment: string
   }
 }
 
+export async function deleteIncidence(incidenceId: number, token: string): Promise<void> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const response = await fetch(`${apiUrl}/incidences/${incidenceId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudo eliminar la incidencia");
+  }
+}
+
 export async function updateIncidenceStatus(
   incidenceId: number,
   body: UpdateIncidenceBody,

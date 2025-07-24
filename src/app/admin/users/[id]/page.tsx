@@ -123,9 +123,11 @@ export default function UserDetailsPage() {
       setSelectedFiles([]);
       setFileInputKey(Date.now());
 
+      // Refresh incidences when a new incidence is created
       const updatedIncidences = await getUserIncidences(userId, currentPeriodId!, token);
       setCurrentIncidences(updatedIncidences);
 
+      // refresh score
       const periodsData: UserScore[] = await getUserPeriods(userId, token);
       const selectedPeriod = periodsData.find((p) => p.period.id === currentPeriodId);
       setScore(selectedPeriod ? selectedPeriod.score : null);
@@ -153,12 +155,31 @@ export default function UserDetailsPage() {
     }));
   };
 
+  // Delete incidence from child component
+  const handleIncidenceDeleted = async (deletedIncidenceId: number) => {
+    setCurrentIncidences((prevIncidences) =>
+      prevIncidences.filter((inc) => inc.id !== deletedIncidenceId)
+    );
+
+    if (currentPeriodId) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const periodsData: UserScore[] = await getUserPeriods(userId, token);
+          const selectedPeriod = periodsData.find((p) => p.period.id === currentPeriodId);
+          setScore(selectedPeriod ? selectedPeriod.score : null);
+        } catch (err) {
+          console.error("Error al actualizar score después de eliminar incidencia:", err);
+        }
+      }
+    }
+  };
+  
+
   return (
     <div className="min-h-screen text-dark-text-primary">
-      {/* Header */}
       <Header title="Detalles del Usuario" />
 
-      {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {loading ? (
           <div className="text-center text-lg font-semibold text-dark-text-secondary">
@@ -168,7 +189,6 @@ export default function UserDetailsPage() {
           <div className="text-center text-lg font-semibold text-red-500">Error: {error}</div>
         ) : (
           <>
-            {/* Datos Generales */}
             <section className="flex flex-col md:flex-row items-center justify-between mb-8">
               <div className="flex flex-col items-center">
                 <Image
@@ -207,8 +227,8 @@ export default function UserDetailsPage() {
               </div>
             </section>
 
-            {/* Formulario Crear Incidencia */}
-            <section className="mb-8 p-6 bg-dark-secondary rounded-lg shadow-xl border-2 border-dark-border"> {/* Added styling for the form section */}
+            {/* Incidence Form */}
+            <section className="mb-8 p-6 bg-dark-secondary rounded-lg shadow-xl border-2 border-dark-border">
               <h2 className="text-xl font-bold mb-4 text-dark-text-primary">Nueva Incidencia</h2>
               <div className="flex flex-col gap-4">
                 <div className="relative">
@@ -275,18 +295,18 @@ export default function UserDetailsPage() {
                       setSelectedFiles(Array.from(e.target.files));
                     }
                   }}
-                  className="mt-4 text-dark-text-secondary" // Added text color for file input
+                  className="mt-4 text-dark-text-secondary"
                 />
               </div>
               <button
                 onClick={handleCreateIncidence}
-                className="mt-6 bg-dark-accent text-dark-primary py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity w-full" // Updated button styles
+                className="mt-6 bg-dark-accent text-dark-primary py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity w-full"
               >
                 Crear Incidencia
               </button>
             </section>
 
-            {/* Incidencias del Periodo Actual */}
+            {/* List incidence */}
             <section>
               <h2 className="text-xl font-bold mb-4 text-dark-text-primary">Incidencias del Periodo Actual</h2>
               {currentIncidences.length === 0 ? (
@@ -294,7 +314,11 @@ export default function UserDetailsPage() {
               ) : (
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {currentIncidences.map((incidence) => (
-                    <IncidenceCard key={incidence.id} incidence={incidence} /> // Use the new component
+                    <IncidenceCard
+                      key={incidence.id}
+                      incidence={incidence}
+                      onDeleteSuccess={handleIncidenceDeleted}
+                    />
                   ))}
                 </ul>
               )}
